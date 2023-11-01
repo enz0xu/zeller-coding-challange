@@ -1,16 +1,31 @@
-import React from "react";
-import { useSuspenseQuery, gql } from "@apollo/client";
-import { ListZellerCustomers } from "../graphql/queries";
+import { useContext } from "react";
+import {
+  Section,
+  SectionContent,
+  SectionHeader,
+} from "./ui-components/Section";
+import { UserTypeContext } from "../context/UserTypeContext";
+import { UserSection } from "./ui-components/User";
 
 const UserList = () => {
-  const { data } = useSuspenseQuery(
-    gql`
-      ${ListZellerCustomers}
-    `
-  );
-  console.log(data);
+  const { userList, selectedUserType } = useContext(UserTypeContext) || {};
 
-  return <div>UserList</div>;
+  if (!selectedUserType) return null;
+  return (
+    <Section>
+      <SectionHeader>User List</SectionHeader>
+      <SectionContent>
+        {userList
+          ?.filter((user) => user.role === selectedUserType)
+          .map((user) => (
+            <UserSection key={user.id}>
+              <div>{user.name}</div>
+              <div>{user.role}</div>
+            </UserSection>
+          ))}
+      </SectionContent>
+    </Section>
+  );
 };
 
 export default UserList;
